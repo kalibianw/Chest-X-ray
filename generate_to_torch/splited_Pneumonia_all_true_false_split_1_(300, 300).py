@@ -14,6 +14,7 @@ EPOCHS = 100
 MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_(300, 300).pt"
 LOCAL_TIME = time.localtime()
 LOG_FOLDER_PATH = f"./torch_logs/{LOCAL_TIME[0]}_{LOCAL_TIME[1]}_{LOCAL_TIME[2]}_{LOCAL_TIME[3]}_{LOCAL_TIME[4]}_{LOCAL_TIME[5]}"
+
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 REDUCE_LR_RATE = 0.6
 LOG_INTERVAL = 10
