@@ -223,7 +223,7 @@ class TrainModule:
         else:
             self.non_improve_cnt = 0
 
-        return train_accuracy, train_loss, valid_acc, valid_loss
+        return train_accuracy, train_loss, valid_acc, valid_loss, self.optimizer.param_groups[0]["lr"]
 
     def evaluate(self, model, test_loader):
         model.eval()

@@ -19,7 +19,7 @@ LOG_FOLDER_PATH = f"./torch_logs/{LOCAL_TIME[0]}_{LOCAL_TIME[1]}_{LOCAL_TIME[2]}
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 REDUCE_LR_RATE = 0.6
 LOG_INTERVAL = 10
-EARLY_STOPPING_CNT = 20
+EARLY_STOPPING_CNT = 640
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
 nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
@@ -71,13 +71,16 @@ current_time = time.time()
 best_loss = sys.maxsize
 not_improve_cnt = 0
 for Epoch in range(1, EPOCHS + 1):
-    train_acc, train_loss, valid_acc, valid_loss = tm.training(
+    train_acc, train_loss, valid_acc, valid_loss, current_lr = tm.training(
         model,
         train_loader=train_loader,
         valid_loader=valid_loader,
         log_interval=LOG_INTERVAL
     )
-    print("\n[EPOCH: {}], \tTrain Loss: {:.4f}, \tTrain Accuracy: {:.2f}%".format(Epoch, train_loss, train_acc))
+    print("\n[EPOCH: {}], \tTrain Loss: {:.4f}, \tTrain Accuracy: {:.2f}%\tLearning Rate: {}".format(Epoch,
+                                                                                                     train_loss,
+                                                                                                     train_acc,
+                                                                                                     current_lr))
     print("[EPOCH: {}], \tValid Loss: {:.4f}, \tValid Accuracy: {:.2f}%\n".format(Epoch, valid_loss, valid_acc))
 
     test_acc, test_loss = tm.evaluate(model, test_loader)
