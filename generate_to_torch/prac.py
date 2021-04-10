@@ -11,17 +11,20 @@ train_x_data = nploader["train_x_data"] / 255.0
 train_x_data = np.expand_dims(train_x_data, axis=1)
 print(np.shape(train_x_data))
 train_y_data = nploader["train_y_data"].astype(np.long)
-categorical_train_y_data = to_categorical(train_y_data)
 
 for x_data, y_data in zip(train_x_data, train_y_data):
     print(x_data)
     print(x_data.max(), x_data.min())
     print(y_data)
-    print(categorical_train_y_data[0, :])
     print(np.shape(x_data))
     print(type(x_data[0, 0, 0]))
     print(np.shape(y_data))
     print(type(y_data))
-    print(np.shape(categorical_train_y_data))
-    print(type(categorical_train_y_data))
-    exit()
+
+    break
+
+train_loader = dm.np_to_dataloader(train_x_data, train_y_data)
+for batch_idx, (image, label) in enumerate(train_loader):
+    print(label)
+
+    break

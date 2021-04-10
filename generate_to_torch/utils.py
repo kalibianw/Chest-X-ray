@@ -14,6 +14,7 @@ class DataModule:
     def np_to_dataloader(self, xArray: np.ndarray, yArray: np.ndarray):
         tensor_x = torch.Tensor(xArray)
         tensor_y = torch.Tensor(yArray)
+        tensor_y = tensor_y.long()
 
         dataset = TensorDataset(tensor_x, tensor_y)
         data_loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=self.shuffle)
@@ -190,7 +191,6 @@ class TrainModule:
         for batch_idx, (image, label) in enumerate(train_loader):
             image = image.to(self.DEVICE)
             label = label.to(self.DEVICE)
-            label = label.long()
             self.optimizer.zero_grad()
             output = model(image)
             # print(type(label))
