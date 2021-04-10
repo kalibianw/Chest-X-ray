@@ -17,7 +17,7 @@ LOG_FOLDER_PATH = f"./torch_logs/{LOCAL_TIME[0]}_{LOCAL_TIME[1]}_{LOCAL_TIME[2]}
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 REDUCE_LR_RATE = 0.6
 LOG_INTERVAL = 10
-EARLY_STOPPING_CNT = 15
+EARLY_STOPPING_CNT = 20
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
 nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
