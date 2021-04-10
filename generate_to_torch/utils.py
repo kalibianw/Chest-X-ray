@@ -190,8 +190,11 @@ class TrainModule:
         for batch_idx, (image, label) in enumerate(train_loader):
             image = image.to(self.DEVICE)
             label = label.to(self.DEVICE)
+            label = label.long()
             self.optimizer.zero_grad()
             output = model(image)
+            # print(type(label))
+            # print(label)
             loss = self.criterion(output, label)
             loss.backward()
             self.optimizer.step()
