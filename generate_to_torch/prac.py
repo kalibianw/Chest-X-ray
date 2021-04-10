@@ -1,20 +1,19 @@
-import torch
-from utils import NeuralNetwork
+from utils import DataModule
+import numpy as np
+import cv2
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+BATCH_SIZE = 32
 
-nn = NeuralNetwork()
-model = nn.to(DEVICE)
-optim = torch.optim.Adam(model.parameters(), lr=1e-3)
-print(optim.param_groups)
-for param_group in optim.param_groups:
-    print(type(param_group))
-    print(param_group.keys())
-    param_group["lr"] = 1e-5
-    print(param_group["lr"])
+dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
+nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
+train_x_data = nploader["train_x_data"]
+train_x_data = np.expand_dims(train_x_data, axis=1)
+print(np.shape(train_x_data))
 
-optim.param_groups[0]["lr"] = 1e-6
-for param_group in optim.param_groups:
-    print(type(param_group))
-    print(param_group.keys())
-    print(param_group["lr"])
+for x_data in train_x_data:
+    print(np.shape(x_data))
+    test_arr = np.transpose(x_data, (1, 2, 0))
+    print(np.shape(test_arr))
+    cv2.imshow("test", test_arr)
+    cv2.waitKey(0)
+    exit()
