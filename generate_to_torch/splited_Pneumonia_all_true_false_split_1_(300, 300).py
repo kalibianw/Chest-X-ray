@@ -33,6 +33,7 @@ del train_x_data
 del train_y_data
 
 valid_x_data = nploader["valid_x_data"]
+valid_x_data = np.expand_dims(valid_x_data, axis=1)
 print(np.shape(valid_x_data))
 valid_y_data = nploader["valid_y_data"]
 valid_loader = dm.np_to_dataloader(valid_x_data, valid_y_data)
@@ -40,6 +41,7 @@ del valid_x_data
 del valid_y_data
 
 test_x_data = nploader["test_x_data"]
+test_x_data = np.expand_dims(test_x_data, axis=1)
 print(np.shape(test_x_data))
 test_y_data = nploader["test_y_data"]
 test_loader = dm.np_to_dataloader(test_x_data, test_y_data)
