@@ -11,15 +11,22 @@ import sys
 import os
 
 BATCH_SIZE = 32
-EPOCHS = 100
+EPOCHS = 1000
 MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_(300, 300).pt"
 LOCAL_TIME = time.localtime()
-LOG_FOLDER_PATH = f"./torch_logs/{LOCAL_TIME[0]}_{LOCAL_TIME[1]}_{LOCAL_TIME[2]}_{LOCAL_TIME[3]}_{LOCAL_TIME[4]}_{LOCAL_TIME[5]}"
+LOG_FOLDER_PATH = f"./torch_logs/" \
+                  f"{LOCAL_TIME[0]}_" \
+                  f"{LOCAL_TIME[1]}_" \
+                  f"{LOCAL_TIME[2]}_" \
+                  f"{LOCAL_TIME[3]}_" \
+                  f"{LOCAL_TIME[4]}_" \
+                  f"{LOCAL_TIME[5]}"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+REDUCE_LR_PATIENCE = 10
 REDUCE_LR_RATE = 0.6
-LOG_INTERVAL = 10
-EARLY_STOPPING_CNT = 640
+LOG_INTERVAL = 640
+EARLY_STOPPING_CNT = 55
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
 nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
@@ -57,11 +64,12 @@ summary(model, input_size=(32, 1, 300, 300))
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 loss = nn.CrossEntropyLoss()
 tm = TrainModule(
-    DEVICE=DEVICE,
+    device=DEVICE,
     optimizer=optimizer,
     loss=loss,
-    BATCH_SIZE=BATCH_SIZE,
-    REDUCE_LR_RATE=REDUCE_LR_RATE
+    bach_size=BATCH_SIZE,
+    reduce_lr_rate=REDUCE_LR_RATE,
+    reduce_lr_patience=REDUCE_LR_PATIENCE
 )
 
 os.makedirs(LOG_FOLDER_PATH)

@@ -171,9 +171,9 @@ class NeuralNetwork(nn.Module):
 
 
 class TrainModule:
-    def __init__(self, DEVICE, optimizer, loss, BATCH_SIZE, REDUCE_LR_RATE):
-        self.DEVICE = DEVICE
-        self.BATCH_SIZE = BATCH_SIZE
+    def __init__(self, device, optimizer, loss, bach_size, reduce_lr_rate, reduce_lr_patience):
+        self.DEVICE = device
+        self.BATCH_SIZE = bach_size
         self.optimizer = optimizer
         self.criterion = loss
         self.epoch = 0
@@ -181,7 +181,8 @@ class TrainModule:
         self.last_val_loss = sys.maxsize
         self.non_improve_cnt = 0
 
-        self.REDUCE_LR_RATE = REDUCE_LR_RATE
+        self.REDUCE_LR_RATE = reduce_lr_rate
+        self.REDUCE_LR_PATIENCE = reduce_lr_patience
 
     def training(self, model, train_loader, valid_loader, log_interval):
         model.train()
@@ -217,12 +218,13 @@ class TrainModule:
 
         valid_acc, valid_loss = self.evaluate(model, valid_loader)
         if valid_loss > self.last_val_loss:
-            if self.non_improve_cnt > 5:
+            if self.non_improve_cnt > self.REDUCE_LR_PATIENCE:
                 self.optimizer.param_groups[0]["lr"] = self.optimizer.param_groups[0]["lr"] * self.REDUCE_LR_RATE
             self.non_improve_cnt += 1
         else:
             self.non_improve_cnt = 0
 
+        self.epoch += 1
         return train_accuracy, train_loss, valid_acc, valid_loss, self.optimizer.param_groups[0]["lr"]
 
     def evaluate(self, model, test_loader):
