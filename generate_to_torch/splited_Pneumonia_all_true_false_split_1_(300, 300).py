@@ -93,6 +93,7 @@ for Epoch in range(1, EPOCHS + 1):
 
     test_acc, test_loss = tm.evaluate(model, test_loader)
     print("[EPOCH: {}], \tTest Loss: {:.4f}, \tTest Accuracy: {:.2f}%\n".format(Epoch, test_loss, test_acc))
+    print(f"Early stopping non_iprove_cnt: {not_improve_cnt}")
 
     writer.add_scalar("Loss/train", train_loss, Epoch)
     writer.add_scalar("Loss/valid", valid_loss, Epoch)

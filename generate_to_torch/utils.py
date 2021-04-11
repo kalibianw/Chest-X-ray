@@ -216,6 +216,7 @@ class TrainModule:
         train_loss /= (len(train_loader.dataset) / self.BATCH_SIZE)
         train_accuracy = 100. * correct / len(train_loader.dataset)
 
+        print(f"Reduce LR cnt: {self.non_improve_cnt}")
         valid_acc, valid_loss = self.evaluate(model, valid_loader)
         if valid_loss > self.last_val_loss:
             if self.non_improve_cnt > self.REDUCE_LR_PATIENCE:
