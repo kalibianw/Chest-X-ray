@@ -25,7 +25,7 @@ LOG_FOLDER_PATH = f"./torch_logs/" \
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 REDUCE_LR_PATIENCE = 10
 REDUCE_LR_RATE = 0.6
-LOG_INTERVAL = 640
+LOG_INTERVAL = 32
 EARLY_STOPPING_CNT = 55
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
