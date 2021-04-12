@@ -26,7 +26,7 @@ LEARNRING_RATE = 1e-3
 REDUCE_LR_PATIENCE = 5
 REDUCE_LR_RATE = 0.6
 LOG_INTERVAL = 32
-EARLY_STOPPING_CNT = 20
+EARLY_STOPPING_CNT = 31
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
 nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
@@ -102,6 +102,7 @@ for Epoch in range(0, EPOCHS):
     writer.add_scalar("Accuracy/train", train_acc, Epoch)
     writer.add_scalar("Accuracy/valid", valid_acc, Epoch)
     writer.add_scalar("Accuracy/test", test_acc, Epoch)
+    writer.add_text(tag="Model description", text_string="Swish test")
 
     if test_loss < test_best_loss:
         torch.save(model.state_dict(), MODEL_PATH)

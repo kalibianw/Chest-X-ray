@@ -116,31 +116,31 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1_1(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool(x)
 
         x = self.conv2(x)
         x = self.bn1_2(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool(x)
 
         x = self.conv3(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.dropout(x)
         x = self.maxpool(x)
 
         x = self.conv4(x)
         x = self.bn1_3(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool(x)
 
         x = self.conv5(x)
         x = self.bn1_4(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool(x)
 
         x = self.conv6(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool(x)
         x = self.dropout(x)
 
@@ -148,21 +148,21 @@ class NeuralNetwork(nn.Module):
 
         x = self.fc1(x)
         x = self.bn2_1(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
 
         x = self.fc2(x)
         x = self.bn2_2(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.dropout(x)
 
         x = self.fc3(x)
         x = self.bn2_3(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.dropout(x)
 
         x = self.fc4(x)
         x = self.bn2_4(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
 
         x = self.fc5(x)
         x = F.softmax(x)
@@ -217,6 +217,7 @@ class TrainModule:
         if valid_loss > best_loss:
             if self.non_improve_cnt > self.REDUCE_LR_PATIENCE:
                 self.optimizer.param_groups[0]["lr"] = self.optimizer.param_groups[0]["lr"] * self.REDUCE_LR_RATE
+                self.non_improve_cnt = 0
             self.non_improve_cnt += 1
         else:
             self.non_improve_cnt = 0
