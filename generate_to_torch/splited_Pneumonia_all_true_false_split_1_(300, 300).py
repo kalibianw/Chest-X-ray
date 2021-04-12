@@ -22,6 +22,7 @@ LOG_FOLDER_PATH = f"./torch_logs/" \
                   f"{LOCAL_TIME[5]}"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+LEARNRING_RATE = 1e-3
 REDUCE_LR_PATIENCE = 5
 REDUCE_LR_RATE = 0.6
 LOG_INTERVAL = 32
@@ -60,7 +61,7 @@ neural_network = NeuralNetwork()
 model = neural_network.to(DEVICE)
 summary(model, input_size=(32, 1, 300, 300))
 
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
+optimizer = optim.Adam(model.parameters(), lr=LEARNRING_RATE)
 loss = nn.CrossEntropyLoss()
 tm = TrainModule(
     device=DEVICE,
@@ -75,7 +76,8 @@ os.makedirs(LOG_FOLDER_PATH)
 
 writer = SummaryWriter(log_dir=LOG_FOLDER_PATH)
 current_time = time.time()
-best_loss = sys.maxsize
+test_best_loss = sys.maxsize    # for Early stopping
+valid_best_loss = sys.maxsize   # for Reduce learning rate
 not_improve_cnt = 0
 for Epoch in range(0, EPOCHS):
     train_acc, train_loss, valid_acc, valid_loss, current_lr = tm.training(
@@ -83,7 +85,7 @@ for Epoch in range(0, EPOCHS):
         train_loader=train_loader,
         valid_loader=valid_loader,
         log_interval=LOG_INTERVAL,
-        best_loss=best_loss
+        best_loss=valid_best_loss
     )
     print("\n[EPOCH: {}], \tTrain Loss: {:.4f}, \tTrain Accuracy: {:.2f}%\tLearning Rate: {}".format(Epoch,
                                                                                                      train_loss,
@@ -101,15 +103,19 @@ for Epoch in range(0, EPOCHS):
     writer.add_scalar("Accuracy/valid", valid_acc, Epoch)
     writer.add_scalar("Accuracy/test", test_acc, Epoch)
 
-    if test_loss < best_loss:
+    if test_loss < test_best_loss:
         torch.save(model.state_dict(), MODEL_PATH)
-        best_loss = test_loss
+        test_best_loss = test_loss
         not_improve_cnt = 0
-    if test_loss > best_loss:
+    if test_loss > test_best_loss:
         if not_improve_cnt > EARLY_STOPPING_CNT:
             break
         not_improve_cnt += 1
     print(f"Early stopping non_iprove_cnt: {not_improve_cnt}")
-    print(f"Best loss: {best_loss}\n")
+    print(f"Test best loss: {test_best_loss}")
+    print(f"Valid best loss: {valid_best_loss}")
+
+    if valid_loss < valid_best_loss:
+        valid_best_loss = valid_loss
 
 print(time.time() - current_time)
