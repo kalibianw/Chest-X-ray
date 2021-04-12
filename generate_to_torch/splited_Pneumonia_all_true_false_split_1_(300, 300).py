@@ -1,5 +1,4 @@
 from utils import DataModule, NeuralNetwork, TrainModule
-from tensorflow.keras.utils import to_categorical
 from torch.utils.tensorboard import SummaryWriter
 from torchinfo import summary
 from torch import optim
@@ -23,10 +22,10 @@ LOG_FOLDER_PATH = f"./torch_logs/" \
                   f"{LOCAL_TIME[5]}"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-REDUCE_LR_PATIENCE = 10
+REDUCE_LR_PATIENCE = 5
 REDUCE_LR_RATE = 0.6
 LOG_INTERVAL = 32
-EARLY_STOPPING_CNT = 55
+EARLY_STOPPING_CNT = 20
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
 nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
@@ -78,12 +77,13 @@ writer = SummaryWriter(log_dir=LOG_FOLDER_PATH)
 current_time = time.time()
 best_loss = sys.maxsize
 not_improve_cnt = 0
-for Epoch in range(1, EPOCHS + 1):
+for Epoch in range(0, EPOCHS):
     train_acc, train_loss, valid_acc, valid_loss, current_lr = tm.training(
         model,
         train_loader=train_loader,
         valid_loader=valid_loader,
-        log_interval=LOG_INTERVAL
+        log_interval=LOG_INTERVAL,
+        best_loss=best_loss
     )
     print("\n[EPOCH: {}], \tTrain Loss: {:.4f}, \tTrain Accuracy: {:.2f}%\tLearning Rate: {}".format(Epoch,
                                                                                                      train_loss,
@@ -104,6 +104,7 @@ for Epoch in range(1, EPOCHS + 1):
 
     if test_loss < best_loss:
         torch.save(model.state_dict(), MODEL_PATH)
+        best_loss = test_loss
         not_improve_cnt = 0
     if test_loss > best_loss:
         if not_improve_cnt > EARLY_STOPPING_CNT:
