@@ -89,11 +89,10 @@ for Epoch in range(0, EPOCHS):
                                                                                                      train_loss,
                                                                                                      train_acc,
                                                                                                      current_lr))
-    print("[EPOCH: {}], \tValid Loss: {:.4f}, \tValid Accuracy: {:.2f}%\n".format(Epoch, valid_loss, valid_acc))
+    print("[EPOCH: {}], \tValid Loss: {:.4f}, \tValid Accuracy: {:.2f}%".format(Epoch, valid_loss, valid_acc))
 
     test_acc, test_loss = tm.evaluate(model, test_loader)
     print("[EPOCH: {}], \tTest Loss: {:.4f}, \tTest Accuracy: {:.2f}%\n".format(Epoch, test_loss, test_acc))
-    print(f"Early stopping non_iprove_cnt: {not_improve_cnt}")
 
     writer.add_scalar("Loss/train", train_loss, Epoch)
     writer.add_scalar("Loss/valid", valid_loss, Epoch)
@@ -110,5 +109,7 @@ for Epoch in range(0, EPOCHS):
         if not_improve_cnt > EARLY_STOPPING_CNT:
             break
         not_improve_cnt += 1
+    print(f"Early stopping non_iprove_cnt: {not_improve_cnt}")
+    print(f"Best loss: {best_loss}\n")
 
 print(time.time() - current_time)
