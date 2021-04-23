@@ -11,9 +11,10 @@ import os
 
 BATCH_SIZE = 32
 EPOCHS = 1000
-MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_(300, 300).pt"
+MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300).pt"
 LOCAL_TIME = time.localtime()
 LOG_FOLDER_PATH = f"./torch_logs/" \
+                  f"{os.path.splitext(MODEL_PATH)[0]}_" \
                   f"{LOCAL_TIME[0]}_" \
                   f"{LOCAL_TIME[1]}_" \
                   f"{LOCAL_TIME[2]}_" \
@@ -29,7 +30,7 @@ LOG_INTERVAL = 32
 EARLY_STOPPING_CNT = 31
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
-nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
+nploader = np.load("splited_Pneumonia_all_true_false_split_1_0_(300, 300).npz")
 for key in nploader:
     print(key)
 
@@ -102,7 +103,8 @@ for Epoch in range(0, EPOCHS):
     writer.add_scalar("Accuracy/train", train_acc, Epoch)
     writer.add_scalar("Accuracy/valid", valid_acc, Epoch)
     writer.add_scalar("Accuracy/test", test_acc, Epoch)
-    writer.add_text(tag="Model description", text_string="Swish test")
+    writer.add_scalar("Hyperparameter/current_lr", current_lr, Epoch)
+    writer.add_scalar("Count/not_improve_cnt", not_improve_cnt, Epoch)
 
     if test_loss < test_best_loss:
         torch.save(model.state_dict(), MODEL_PATH)
