@@ -31,9 +31,7 @@ class NeuralNetwork(nn.Module):
             kernel_size=(3, 3),
             padding=(1, 1)
         )
-        self.bn1_1 = nn.BatchNorm2d(
-            num_features=64
-        )
+        self.bn1_1 = nn.BatchNorm2d(num_features=64)
         self.conv2 = nn.Conv2d(
             in_channels=64,
             out_channels=128,
@@ -68,12 +66,13 @@ class NeuralNetwork(nn.Module):
             padding=(1, 1)
         )
 
-        self.maxpool = nn.MaxPool2d(kernel_size=2, padding=(1, 1))
+        self.maxpool = nn.MaxPool2d(kernel_size=(2, 2), padding=(1, 1), stride=2)
+        self.maxpool_ = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
         self.dropout = nn.Dropout()
         self.flatten = nn.Flatten()
 
         self.fc1 = nn.Linear(
-            in_features=6 * 6 * 512,
+            in_features=5 * 5 * 512,
             out_features=512
         )
         self.bn2_1 = nn.BatchNorm1d(num_features=512)
@@ -117,31 +116,31 @@ class NeuralNetwork(nn.Module):
         x = self.conv1(x)
         x = self.bn1_1(x)
         x = F.relu(x)
-        x = self.maxpool(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv2(x)
         x = self.bn1_2(x)
         x = F.relu(x)
-        x = self.maxpool(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv3(x)
         x = F.relu(x)
         x = self.dropout(x)
-        x = self.maxpool(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv4(x)
         x = self.bn1_3(x)
         x = F.relu(x)
-        x = self.maxpool(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv5(x)
         x = self.bn1_4(x)
         x = F.relu(x)
-        x = self.maxpool(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv6(x)
         x = F.relu(x)
-        x = self.maxpool(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
         x = self.dropout(x)
 
         x = self.flatten(x)
