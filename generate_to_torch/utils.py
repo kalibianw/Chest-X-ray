@@ -116,31 +116,31 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1_1(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool(x)
 
         x = self.conv2(x)
         x = self.bn1_2(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool(x)
 
         x = self.conv3(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.dropout(x)
         x = self.maxpool(x)
 
         x = self.conv4(x)
         x = self.bn1_3(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool(x)
 
         x = self.conv5(x)
         x = self.bn1_4(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool(x)
 
         x = self.conv6(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool(x)
         x = self.dropout(x)
 
@@ -148,21 +148,21 @@ class NeuralNetwork(nn.Module):
 
         x = self.fc1(x)
         x = self.bn2_1(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
 
         x = self.fc2(x)
         x = self.bn2_2(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.dropout(x)
 
         x = self.fc3(x)
         x = self.bn2_3(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.dropout(x)
 
         x = self.fc4(x)
         x = self.bn2_4(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
 
         x = self.fc5(x)
         x = F.softmax(x)

@@ -150,7 +150,7 @@ class TrainModule:
         self.ckpt_path = ckpt_path
         self.model_save_name = model_save_name
         self.input_shape = input_shape
-        self.result_path = f"C:/Users/admin/Documents/Study/AI_X/Coronahack-Chest-XRay/Training/{result_file_name}.txt"
+        self.result_path = f"{result_file_name}.txt"
 
     def create_model(self):
         model = models.Sequential([
@@ -343,7 +343,7 @@ class TrainModule:
 
         fhandler.close()
 
-    def model_training(self, model, x_train, y_train, x_valid, y_valid, x_test, y_test, es_patience, batch_size):
+    def model_training(self, model, x_train, y_train, x_valid, y_valid, x_test, y_test, es_patience, batch_size, tensorboard_dir_path):
         # es_patience = 30
         fhandler = open(self.result_path, 'w')
 
@@ -372,6 +372,9 @@ class TrainModule:
                     verbose=2,
                     save_best_only=True,
                     save_weights_only=True
+                ),
+                callbacks.TensorBoard(
+                    log_dir=tensorboard_dir_path
                 )
             ],
             validation_data=(x_valid, y_valid)

@@ -3,14 +3,16 @@ import numpy as np
 
 from utils import TrainModule
 
-nploader = np.load("generate_to_torch/splited_Pneumonia_all_true_false_split_1_0_(300, 300).npz")
+nploader = np.load("../generate_to_torch/splited_Pneumonia_all_true_false_split_1_0_(300, 300).npz")
 
-train_x_data, valid_x_data, test_x_data, train_y_data, valid_y_data, test_y_data = np.expand_dims(nploader["train_imgs"], axis=-1), \
-                                                                                   np.expand_dims(nploader["valid_imgs"], axis=-1), \
-                                                                                   np.expand_dims(nploader["test_imgs"], axis=-1), \
-                                                                                   to_categorical(nploader["train_labels"]), \
-                                                                                   to_categorical(nploader["valid_labels"]), \
-                                                                                   to_categorical(nploader["test_labels"])
+train_x_data, valid_x_data, test_x_data, train_y_data, valid_y_data, test_y_data = np.expand_dims(nploader["train_x_data"], axis=-1) / 255.0, \
+                                                                                   np.expand_dims(nploader["valid_x_data"], axis=-1) / 255.0, \
+                                                                                   np.expand_dims(nploader["test_x_data"], axis=-1) / 255.0, \
+                                                                                   to_categorical(nploader["train_y_data"]), \
+                                                                                   to_categorical(nploader["valid_y_data"]), \
+                                                                                   to_categorical(nploader["test_y_data"])
+
+train_x_data, valid_x_data, test_x_data = train_x_data.astype(dtype="int16"), valid_x_data.astype(dtype="int16"), test_x_data.astype(dtype="int16")
 
 print(
     np.max(train_x_data), np.min(train_x_data), np.max(valid_x_data), np.min(valid_x_data), np.max(test_x_data),
@@ -24,8 +26,8 @@ print(
 )
 
 tm = TrainModule(
-    ckpt_path="C:/Users/admin/Documents/AI/ckpt/Coronahack-Chest-XRay/no_padding_splited_Pneumonia_(300, 300)_TF.ckpt",
-    model_save_name="C:/Users/admin/Documents/AI/model/coronahack/no_padding_splited_Pneumonia_(300, 300)_TF",
+    ckpt_path="C:/AI/ckpt/Coronahack-Chest-XRay/no_padding_splited_Pneumonia_(300, 300)_TF.ckpt",
+    model_save_name="C:/AI/model/coronahack/no_padding_splited_Pneumonia_(300, 300)_TF",
     input_shape=np.shape(train_x_data)[1:],
     result_file_name="no_padding_splited_Pneumonia_(300, 300)_training_result_TF"
 )
@@ -42,5 +44,6 @@ tm.model_training(
     x_test=test_x_data,
     y_test=test_y_data,
     es_patience=31,
-    batch_size=32
+    batch_size=32,
+    tensorboard_dir_path="../generate_to_torch/torch_logs/no_padding_Pneumonia_training_(300,300)"
 )
