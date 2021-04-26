@@ -14,7 +14,7 @@ EPOCHS = 1000
 MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300)_relu.pt"
 LOCAL_TIME = time.localtime()
 LOG_FOLDER_PATH = f"./torch_logs/" \
-                  f"{os.path.splitext(MODEL_PATH)[0]}_" \
+                  f"{os.path.splitext(MODEL_PATH)[0]}_relu_" \
                   f"{LOCAL_TIME[0]}_" \
                   f"{LOCAL_TIME[1]}_" \
                   f"{LOCAL_TIME[2]}_" \
@@ -24,7 +24,7 @@ LOG_FOLDER_PATH = f"./torch_logs/" \
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 LEARNRING_RATE = 1e-3
-REDUCE_LR_PATIENCE = 5
+REDUCE_LR_PATIENCE = 10
 REDUCE_LR_RATE = 0.6
 LOG_INTERVAL = 32
 EARLY_STOPPING_CNT = 31
@@ -37,6 +37,7 @@ for key in nploader:
 train_x_data = nploader["train_x_data"] / 255.0
 train_x_data = np.expand_dims(train_x_data, axis=1)
 print(np.shape(train_x_data))
+print(np.max(train_x_data), np.min(train_x_data))
 train_y_data = nploader["train_y_data"]
 train_loader = dm.np_to_dataloader(train_x_data, train_y_data)
 del train_x_data
@@ -45,6 +46,7 @@ del train_y_data
 valid_x_data = nploader["valid_x_data"] / 255.0
 valid_x_data = np.expand_dims(valid_x_data, axis=1)
 print(np.shape(valid_x_data))
+print(np.max(valid_x_data), np.min(valid_x_data))
 valid_y_data = nploader["valid_y_data"]
 valid_loader = dm.np_to_dataloader(valid_x_data, valid_y_data)
 del valid_x_data
@@ -53,6 +55,7 @@ del valid_y_data
 test_x_data = nploader["test_x_data"] / 255.0
 test_x_data = np.expand_dims(test_x_data, axis=1)
 print(np.shape(test_x_data))
+print(np.max(test_x_data), np.min(test_x_data))
 test_y_data = nploader["test_y_data"]
 test_loader = dm.np_to_dataloader(test_x_data, test_y_data)
 del test_x_data
@@ -77,8 +80,8 @@ os.makedirs(LOG_FOLDER_PATH)
 
 writer = SummaryWriter(log_dir=LOG_FOLDER_PATH)
 current_time = time.time()
-test_best_loss = sys.maxsize    # for Early stopping
-valid_best_loss = sys.maxsize   # for Reduce learning rate
+test_best_loss = sys.maxsize  # for Early stopping
+valid_best_loss = sys.maxsize  # for Reduce learning rate
 not_improve_cnt = 0
 for Epoch in range(0, EPOCHS):
     train_acc, train_loss, valid_acc, valid_loss, current_lr = tm.training(
@@ -114,11 +117,11 @@ for Epoch in range(0, EPOCHS):
         if not_improve_cnt > EARLY_STOPPING_CNT:
             break
         not_improve_cnt += 1
+    if valid_loss < valid_best_loss:
+        valid_best_loss = valid_loss
+
     print(f"Early stopping non_iprove_cnt: {not_improve_cnt}")
     print(f"Test best loss: {test_best_loss}")
     print(f"Valid best loss: {valid_best_loss}")
-
-    if valid_loss < valid_best_loss:
-        valid_best_loss = valid_loss
 
 print(time.time() - current_time)

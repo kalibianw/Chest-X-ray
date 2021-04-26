@@ -425,7 +425,7 @@ class TrainModule:
         plt.ylabel("Losses")
         plt.tight_layout()
 
-        fig_path = "C:/Users/admin/Documents/Study/AI_X/Coronahack-Chest-XRay/fig/" + tst + "_" + str(
+        fig_path = "fig/" + tst + "_" + str(
             fold_no) + f"_{self.result_file_name}.png"
         plt.savefig(fname=fig_path, dpi=300)
         plt.clf()
