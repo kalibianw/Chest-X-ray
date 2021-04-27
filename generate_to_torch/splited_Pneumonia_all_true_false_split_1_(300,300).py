@@ -1,4 +1,4 @@
-from utils import DataModule, NeuralNetwork, TrainModule
+from utils import DataModule, NeuralNetwork, TrainModule, TestModule
 from torch.utils.tensorboard import SummaryWriter
 from torchinfo import summary
 from torch import optim
@@ -80,10 +80,10 @@ os.makedirs(LOG_FOLDER_PATH)
 
 writer = SummaryWriter(log_dir=LOG_FOLDER_PATH)
 current_time = time.time()
-test_best_loss = sys.maxsize    # for Early stopping
-valid_best_loss = sys.maxsize   # for Reduce learning rate
+test_best_loss = sys.maxsize  # for Early stopping
+valid_best_loss = sys.maxsize  # for Reduce learning rate
 not_improve_cnt = 0
-for Epoch in range(0, EPOCHS):
+for epoch in range(0, EPOCHS):
     train_acc, train_loss, valid_acc, valid_loss, current_lr = tm.training(
         model,
         train_loader=train_loader,
@@ -91,28 +91,40 @@ for Epoch in range(0, EPOCHS):
         log_interval=LOG_INTERVAL,
         best_loss=valid_best_loss
     )
-    print("\n[EPOCH: {}], \tTrain Loss: {:.4f}, \tTrain Accuracy: {:.2f}%\tLearning Rate: {}".format(Epoch,
+    print("\n[EPOCH: {}], \tTrain Loss: {:.4f}, \tTrain Accuracy: {:.2f}%\tLearning Rate: {}".format(epoch,
                                                                                                      train_loss,
                                                                                                      train_acc,
                                                                                                      current_lr))
-    print("[EPOCH: {}], \tValid Loss: {:.4f}, \tValid Accuracy: {:.2f}%".format(Epoch, valid_loss, valid_acc))
+    print("[EPOCH: {}], \tValid Loss: {:.4f}, \tValid Accuracy: {:.2f}%".format(epoch, valid_loss, valid_acc))
 
     model.eval()
+    tm_ = TestModule()
+    true_positive, true_negative, false_positive, false_negative = tm_.analysis(model, test_loader)
+    recall, precision, f1_score, specificity = \
+        tm_.evaluation(true_positive, true_negative, false_positive, false_negative)
+    writer.add_scalar("Test/True Positive", true_positive, epoch)
+    writer.add_scalar("Test/True Negative", true_negative, epoch)
+    writer.add_scalar("Test/False Positive", false_positive, epoch)
+    writer.add_scalar("Test/False Negative", false_negative, epoch)
+    writer.add_scalar("Test_/Recall", recall, epoch)
+    writer.add_scalar("Test_/precision", precision, epoch)
+    writer.add_scalar("Test_/f1_score", f1_score, epoch)
+    writer.add_scalar("Test_/specificity", specificity, epoch)
 
     test_acc, test_loss = tm.evaluate(model, test_loader)
-    print("[EPOCH: {}], \tTest Loss: {:.4f}, \tTest Accuracy: {:.2f}%\n".format(Epoch, test_loss, test_acc))
+    print("[EPOCH: {}], \tTest Loss: {:.4f}, \tTest Accuracy: {:.2f}%\n".format(epoch, test_loss, test_acc))
 
-    writer.add_scalar("Loss/train", train_loss, Epoch)
-    writer.add_scalar("Loss/valid", valid_loss, Epoch)
-    writer.add_scalar("Loss/test", test_loss, Epoch)
-    writer.add_scalar("Accuracy/train", train_acc, Epoch)
-    writer.add_scalar("Accuracy/valid", valid_acc, Epoch)
-    writer.add_scalar("Accuracy/test", test_acc, Epoch)
-    writer.add_scalar("Hyperparameter/current_lr", current_lr, Epoch)
-    writer.add_scalar("Count/not_improve_cnt", not_improve_cnt, Epoch)
+    writer.add_scalar("Loss/train", train_loss, epoch)
+    writer.add_scalar("Loss/valid", valid_loss, epoch)
+    writer.add_scalar("Loss/test", test_loss, epoch)
+    writer.add_scalar("Accuracy/train", train_acc, epoch)
+    writer.add_scalar("Accuracy/valid", valid_acc, epoch)
+    writer.add_scalar("Accuracy/test", test_acc, epoch)
+    writer.add_scalar("Hyperparameter/current_lr", current_lr, epoch)
+    writer.add_scalar("Count/not_improve_cnt", not_improve_cnt, epoch)
 
     if test_loss < test_best_loss:
-        torch.save(model.state_dict(), MODEL_PATH)
+        torch.save(model, MODEL_PATH)
         test_best_loss = test_loss
         not_improve_cnt = 0
     if test_loss > test_best_loss:

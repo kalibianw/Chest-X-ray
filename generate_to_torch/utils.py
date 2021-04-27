@@ -164,7 +164,7 @@ class NeuralNetwork(nn.Module):
         x = F.hardswish(x)
 
         x = self.fc5(x)
-        x = F.softmax(x)
+        x = F.softmax(x, dim=2)
 
         return x
 
@@ -229,7 +229,6 @@ class TrainModule:
         return train_accuracy, train_loss, valid_acc, valid_loss, self.optimizer.param_groups[0]["lr"]
 
     def evaluate(self, model, test_loader):
-        model.eval()
         test_loss = 0.
         correct = 0.
         with torch.no_grad():
@@ -245,3 +244,43 @@ class TrainModule:
         test_accuracy = 100. * correct / len(test_loader.dataset)
 
         return test_accuracy, test_loss
+
+
+class TestModule:
+    def __init__(self):
+        pass
+
+    def analysis(self, model, test_loader):
+        true_positive, true_negative, false_positive, false_negative = 0, 0, 0, 0
+        with torch.no_grad:
+            for data in test_loader:
+                images, labels = data
+                images, labels = images.cuda(), labels.cuda()
+                outputs = model(images)
+                # print(outputs)
+                # print(np.shape(outputs))
+                values, indicies = torch.max(outputs.data, 1)
+                for label, index in zip(labels, indicies):
+                    if int(label) == 1:
+                        if int(index) == 1:
+                            true_positive += 1
+                        else:
+                            false_positive += 1
+                    else:
+                        if int(index) == 0:
+                            true_negative += 1
+                        else:
+                            false_negative += 1
+        print(f"TP: {true_positive} TN: {true_negative} FP: {false_positive} FN: {false_negative}")
+
+        return true_positive, true_negative, false_positive, false_negative
+
+    def evaluation(self, TP, TN, FP, FN):
+        recall = TP / (TP + FN)
+        precision = TP / (TP + FP)
+        f1_score = 2 * ((precision * recall) / (precision + recall))
+        Specificity = TN / (TP + FP)
+
+        print(f"Recall: {recall}\nPrecision: {precision}\nF1 Score: {f1_score}\nSpecificity: {Specificity}")
+
+        return recall, precision, f1_score, Specificity
