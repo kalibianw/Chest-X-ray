@@ -14,7 +14,7 @@ class DataModule:
     def np_to_dataloader(self, x_data: np.ndarray, y_data: np.ndarray):
         tensor_x = torch.Tensor(x_data)
         tensor_y = torch.Tensor(y_data)
-        tensor_y = tensor_y.long()
+        # tensor_y = tensor_y.long()
 
         dataset = TensorDataset(tensor_x, tensor_y)
         data_loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=self.shuffle)
@@ -164,7 +164,7 @@ class NeuralNetwork(nn.Module):
         x = F.hardswish(x)
 
         x = self.fc5(x)
-        x = F.softmax(x, dim=2)
+        x = F.softmax(x, dim=1)
 
         return x
 
@@ -207,7 +207,7 @@ class TrainModule:
 
             train_loss += loss.item()
             prediction = output.max(1, keepdim=True)[1]
-            correct += prediction.eq(label.view_as(prediction)).sum().item()
+            correct += prediction.eq(torch.max(label, 1)[1].view_as(prediction)).sum().item()
 
         train_loss /= (len(train_loader.dataset) / self.BATCH_SIZE)
         train_accuracy = 100. * correct / len(train_loader.dataset)
