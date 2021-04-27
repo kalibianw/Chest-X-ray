@@ -11,10 +11,10 @@ import os
 
 BATCH_SIZE = 32
 EPOCHS = 1000
-MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300)_swish.pt"
+MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300)_combined.pt"
 LOCAL_TIME = time.localtime()
 LOG_FOLDER_PATH = f"./torch_logs/" \
-                  f"{os.path.splitext(MODEL_PATH)[0]}_relu_" \
+                  f"{os.path.splitext(MODEL_PATH)[0]}_" \
                   f"{LOCAL_TIME[0]}_" \
                   f"{LOCAL_TIME[1]}_" \
                   f"{LOCAL_TIME[2]}_" \

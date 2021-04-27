@@ -120,11 +120,11 @@ class NeuralNetwork(nn.Module):
 
         x = self.conv2(x)
         x = self.bn1_2(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv3(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.dropout(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
