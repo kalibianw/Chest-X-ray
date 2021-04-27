@@ -115,7 +115,7 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1_1(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv2(x)
@@ -130,16 +130,16 @@ class NeuralNetwork(nn.Module):
 
         x = self.conv4(x)
         x = self.bn1_3(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv5(x)
         x = self.bn1_4(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv6(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
         x = self.dropout(x)
 
@@ -147,21 +147,21 @@ class NeuralNetwork(nn.Module):
 
         x = self.fc1(x)
         x = self.bn2_1(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
 
         x = self.fc2(x)
         x = self.bn2_2(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.dropout(x)
 
         x = self.fc3(x)
         x = self.bn2_3(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
         x = self.dropout(x)
 
         x = self.fc4(x)
         x = self.bn2_4(x)
-        x = F.hardswish(x)
+        x = F.relu(x)
 
         x = self.fc5(x)
         x = F.softmax(x, dim=1)
@@ -238,7 +238,7 @@ class TrainModule:
                 output = model(image)
                 test_loss += self.criterion(output, label).item()
                 prediction = output.max(1, keepdim=True)[1]
-                correct += prediction.eq(label.view_as(prediction)).sum().item()
+                correct += prediction.eq(torch.max(label, 1)[1].view_as(prediction)).sum().item()
 
         test_loss /= (len(test_loader.dataset) / self.BATCH_SIZE)
         test_accuracy = 100. * correct / len(test_loader.dataset)
@@ -252,22 +252,19 @@ class TestModule:
 
     def analysis(self, model, test_loader):
         true_positive, true_negative, false_positive, false_negative = 0, 0, 0, 0
-        with torch.no_grad:
+        with torch.no_grad():
             for data in test_loader:
                 images, labels = data
                 images, labels = images.cuda(), labels.cuda()
                 outputs = model(images)
-                # print(outputs)
-                # print(np.shape(outputs))
-                values, indicies = torch.max(outputs.data, 1)
-                for label, index in zip(labels, indicies):
-                    if int(label) == 1:
-                        if int(index) == 1:
+                for label, output in zip(labels, outputs):
+                    if int(torch.argmax(label)) == 1:
+                        if int(torch.argmax(output)) == 1:
                             true_positive += 1
                         else:
                             false_positive += 1
                     else:
-                        if int(index) == 0:
+                        if int(torch.argmax(output)) == 0:
                             true_negative += 1
                         else:
                             false_negative += 1
@@ -279,8 +276,8 @@ class TestModule:
         recall = TP / (TP + FN)
         precision = TP / (TP + FP)
         f1_score = 2 * ((precision * recall) / (precision + recall))
-        Specificity = TN / (TP + FP)
+        specificity = TN / (TP + FP)
 
-        print(f"Recall: {recall}\nPrecision: {precision}\nF1 Score: {f1_score}\nSpecificity: {Specificity}")
+        print(f"Recall: {recall}\nPrecision: {precision}\nF1 Score: {f1_score}\nSpecificity: {specificity}")
 
-        return recall, precision, f1_score, Specificity
+        return recall, precision, f1_score, specificity
