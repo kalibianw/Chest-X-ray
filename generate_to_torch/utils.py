@@ -258,7 +258,8 @@ class TestModule:
                 images, labels = images.cuda(), labels.cuda()
                 outputs = model(images)
                 for label, output in zip(labels, outputs):
-                    if int(torch.argmax(label)) == 1:
+                    print(f"label: {int(label)}\toutput: {int(torch.argmax(output))}")
+                    if int(label) == 1:
                         if int(torch.argmax(output)) == 1:
                             true_positive += 1
                         else:
@@ -276,7 +277,7 @@ class TestModule:
         recall = TP / (TP + FN)
         precision = TP / (TP + FP)
         f1_score = 2 * ((precision * recall) / (precision + recall))
-        specificity = TN / (TP + FP)
+        specificity = TN / (TN + FP)
 
         print(f"Recall: {recall}\nPrecision: {precision}\nF1 Score: {f1_score}\nSpecificity: {specificity}")
 
