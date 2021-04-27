@@ -1,5 +1,4 @@
 from utils import DataModule, NeuralNetwork, TrainModule, TestModule
-from tensorflow.keras.utils import to_categorical
 from torch.utils.tensorboard import SummaryWriter
 from torchinfo import summary
 from torch import optim
@@ -12,7 +11,7 @@ import os
 
 BATCH_SIZE = 32
 EPOCHS = 1000
-MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300)_relu_re.pt"
+MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300)_combined.pt"
 LOCAL_TIME = time.localtime()
 LOG_FOLDER_PATH = f"./torch_logs/" \
                   f"{os.path.splitext(MODEL_PATH)[0]}_" \
@@ -37,7 +36,7 @@ for key in nploader:
 
 train_x_data = nploader["train_x_data"] / 255.0
 train_x_data = np.expand_dims(train_x_data, axis=1)
-train_y_data = to_categorical(nploader["train_y_data"])
+train_y_data = nploader["train_y_data"]
 train_loader = dm.np_to_dataloader(train_x_data, train_y_data)
 print(np.shape(train_x_data), np.shape(train_y_data))
 print(np.max(train_x_data), np.min(train_x_data))
@@ -46,7 +45,7 @@ del train_y_data
 
 valid_x_data = nploader["valid_x_data"] / 255.0
 valid_x_data = np.expand_dims(valid_x_data, axis=1)
-valid_y_data = to_categorical(nploader["valid_y_data"])
+valid_y_data = nploader["valid_y_data"]
 valid_loader = dm.np_to_dataloader(valid_x_data, valid_y_data)
 print(np.shape(valid_x_data), np.shape(valid_y_data))
 print(np.max(valid_x_data), np.min(valid_x_data))
@@ -55,7 +54,7 @@ del valid_y_data
 
 test_x_data = nploader["test_x_data"] / 255.0
 test_x_data = np.expand_dims(test_x_data, axis=1)
-test_y_data = to_categorical(nploader["test_y_data"])
+test_y_data = nploader["test_y_data"]
 test_loader = dm.np_to_dataloader(test_x_data, test_y_data)
 print(np.shape(test_x_data), np.shape(test_x_data))
 print(np.max(test_x_data), np.min(test_x_data))
@@ -67,7 +66,7 @@ model = neural_network.to(DEVICE)
 summary(model, input_size=(32, 1, 300, 300))
 
 optimizer = optim.Adam(model.parameters(), lr=LEARNRING_RATE)
-loss = nn.BCEWithLogitsLoss()
+loss = nn.CrossEntropyLoss()
 tm = TrainModule(
     device=DEVICE,
     optimizer=optimizer,

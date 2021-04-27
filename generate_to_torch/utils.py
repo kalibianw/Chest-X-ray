@@ -14,7 +14,7 @@ class DataModule:
     def np_to_dataloader(self, x_data: np.ndarray, y_data: np.ndarray):
         tensor_x = torch.Tensor(x_data)
         tensor_y = torch.Tensor(y_data)
-        # tensor_y = tensor_y.long()
+        tensor_y = tensor_y.long()
 
         dataset = TensorDataset(tensor_x, tensor_y)
         data_loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=self.shuffle)
@@ -115,7 +115,7 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1_1(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv2(x)
@@ -130,16 +130,16 @@ class NeuralNetwork(nn.Module):
 
         x = self.conv4(x)
         x = self.bn1_3(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv5(x)
         x = self.bn1_4(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
 
         x = self.conv6(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
         x = self.dropout(x)
 
@@ -147,21 +147,21 @@ class NeuralNetwork(nn.Module):
 
         x = self.fc1(x)
         x = self.bn2_1(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
 
         x = self.fc2(x)
         x = self.bn2_2(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.dropout(x)
 
         x = self.fc3(x)
         x = self.bn2_3(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
         x = self.dropout(x)
 
         x = self.fc4(x)
         x = self.bn2_4(x)
-        x = F.relu(x)
+        x = F.hardswish(x)
 
         x = self.fc5(x)
         x = F.softmax(x, dim=1)
@@ -207,7 +207,7 @@ class TrainModule:
 
             train_loss += loss.item()
             prediction = output.max(1, keepdim=True)[1]
-            correct += prediction.eq(torch.max(label, 1)[1].view_as(prediction)).sum().item()
+            correct += prediction.eq(label.view_as(prediction)).sum().item()
 
         train_loss /= (len(train_loader.dataset) / self.BATCH_SIZE)
         train_accuracy = 100. * correct / len(train_loader.dataset)
@@ -238,7 +238,7 @@ class TrainModule:
                 output = model(image)
                 test_loss += self.criterion(output, label).item()
                 prediction = output.max(1, keepdim=True)[1]
-                correct += prediction.eq(torch.max(label, 1)[1].view_as(prediction)).sum().item()
+                correct += prediction.eq(label.view_as(prediction)).sum().item()
 
         test_loss /= (len(test_loader.dataset) / self.BATCH_SIZE)
         test_accuracy = 100. * correct / len(test_loader.dataset)
@@ -258,7 +258,6 @@ class TestModule:
                 images, labels = images.cuda(), labels.cuda()
                 outputs = model(images)
                 for label, output in zip(labels, outputs):
-                    print(f"label: {int(label)}\toutput: {int(torch.argmax(output))}")
                     if int(label) == 1:
                         if int(torch.argmax(output)) == 1:
                             true_positive += 1
