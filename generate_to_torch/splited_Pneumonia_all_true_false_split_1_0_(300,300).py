@@ -11,7 +11,7 @@ import os
 
 BATCH_SIZE = 32
 EPOCHS = 1000
-MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300)_combined.pt"
+MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_0_(300, 300)_swish_re.pt"
 LOCAL_TIME = time.localtime()
 LOG_FOLDER_PATH = f"./torch_logs/" \
                   f"{os.path.splitext(MODEL_PATH)[0]}_" \
@@ -96,6 +96,8 @@ for Epoch in range(0, EPOCHS):
                                                                                                      train_acc,
                                                                                                      current_lr))
     print("[EPOCH: {}], \tValid Loss: {:.4f}, \tValid Accuracy: {:.2f}%".format(Epoch, valid_loss, valid_acc))
+
+    model.eval()
 
     test_acc, test_loss = tm.evaluate(model, test_loader)
     print("[EPOCH: {}], \tTest Loss: {:.4f}, \tTest Accuracy: {:.2f}%\n".format(Epoch, test_loss, test_acc))

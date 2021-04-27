@@ -97,6 +97,8 @@ for Epoch in range(0, EPOCHS):
                                                                                                      current_lr))
     print("[EPOCH: {}], \tValid Loss: {:.4f}, \tValid Accuracy: {:.2f}%".format(Epoch, valid_loss, valid_acc))
 
+    model.eval()
+
     test_acc, test_loss = tm.evaluate(model, test_loader)
     print("[EPOCH: {}], \tTest Loss: {:.4f}, \tTest Accuracy: {:.2f}%\n".format(Epoch, test_loss, test_acc))
 
