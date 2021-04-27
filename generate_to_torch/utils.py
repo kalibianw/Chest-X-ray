@@ -11,9 +11,9 @@ class DataModule:
         self.batch_size = batch_size
         self.shuffle = shuffle
 
-    def np_to_dataloader(self, xArray: np.ndarray, yArray: np.ndarray):
-        tensor_x = torch.Tensor(xArray)
-        tensor_y = torch.Tensor(yArray)
+    def np_to_dataloader(self, x_data: np.ndarray, y_data: np.ndarray):
+        tensor_x = torch.Tensor(x_data)
+        tensor_y = torch.Tensor(y_data)
         tensor_y = tensor_y.long()
 
         dataset = TensorDataset(tensor_x, tensor_y)
