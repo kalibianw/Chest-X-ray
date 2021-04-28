@@ -124,6 +124,10 @@ for epoch in range(0, EPOCHS):
     writer.add_scalar("Hyperparameter/current_lr", current_lr, epoch)
     writer.add_scalar("Count/not_improve_cnt", not_improve_cnt, epoch)
 
+    print(f"Early stopping non_iprove_cnt: {not_improve_cnt}")
+    print(f"Test best loss: {test_best_loss}")
+    print(f"Valid best loss: {valid_best_loss}")
+
     if test_loss < test_best_loss:
         torch.save(model, MODEL_PATH)
         test_best_loss = test_loss
@@ -134,9 +138,5 @@ for epoch in range(0, EPOCHS):
         not_improve_cnt += 1
     if valid_loss < valid_best_loss:
         valid_best_loss = valid_loss
-
-    print(f"Early stopping non_iprove_cnt: {not_improve_cnt}")
-    print(f"Test best loss: {test_best_loss}")
-    print(f"Valid best loss: {valid_best_loss}")
 
 print(time.time() - current_time)

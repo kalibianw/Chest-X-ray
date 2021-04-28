@@ -1,5 +1,5 @@
 from utils import NeuralNetwork, DataModule
-from torchsummary import summary
+from torchinfo import summary
 import torch
 import numpy as np
 
