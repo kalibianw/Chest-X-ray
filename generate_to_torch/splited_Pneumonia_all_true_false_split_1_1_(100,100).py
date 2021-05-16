@@ -1,4 +1,4 @@
-from utils import DataModule, NeuralNetwork, TrainModule, TestModule
+from utils import DataModule, NeuralNetwork100, TrainModule, TestModule
 from torch.utils.tensorboard import SummaryWriter
 from torchinfo import summary
 from torch import optim
@@ -11,7 +11,7 @@ import os
 
 BATCH_SIZE = 32
 EPOCHS = 1000
-MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_(300, 300)_relu_re.pt"
+MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_1_(100, 100)_combined.pt"
 LOCAL_TIME = time.localtime()
 LOG_FOLDER_PATH = f"./torch_logs/" \
                   f"{os.path.splitext(MODEL_PATH)[0]}_" \
@@ -30,7 +30,7 @@ LOG_INTERVAL = 32
 EARLY_STOPPING_CNT = 31
 
 dm = DataModule(batch_size=BATCH_SIZE, shuffle=True)
-nploader = np.load("splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
+nploader = np.load("splited_Pneumonia_all_true_false_split_1_1_(100, 100).npz")
 for key in nploader:
     print(key)
 
@@ -61,9 +61,9 @@ test_loader = dm.np_to_dataloader(test_x_data, test_y_data)
 del test_x_data
 del test_y_data
 
-neural_network = NeuralNetwork()
+neural_network = NeuralNetwork100()
 model = neural_network.to(DEVICE)
-summary(model, input_size=(32, 1, 300, 300))
+summary(model, input_size=(32, 1, 100, 100))
 
 optimizer = optim.Adam(model.parameters(), lr=LEARNRING_RATE)
 loss = nn.CrossEntropyLoss()

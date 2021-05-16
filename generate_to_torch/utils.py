@@ -22,9 +22,303 @@ class DataModule:
         return data_loader
 
 
-class NeuralNetwork(nn.Module):
+class NeuralNetwork100(nn.Module):
     def __init__(self):
-        super(NeuralNetwork, self).__init__()
+        super(NeuralNetwork100, self).__init__()
+        self.conv1 = nn.Conv2d(
+            in_channels=1,
+            out_channels=64,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.bn1_1 = nn.BatchNorm2d(num_features=64)
+        self.conv2 = nn.Conv2d(
+            in_channels=64,
+            out_channels=128,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.bn1_2 = nn.BatchNorm2d(num_features=128)
+        self.conv3 = nn.Conv2d(
+            in_channels=128,
+            out_channels=128,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.conv4 = nn.Conv2d(
+            in_channels=128,
+            out_channels=256,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.bn1_3 = nn.BatchNorm2d(num_features=256)
+        self.conv5 = nn.Conv2d(
+            in_channels=256,
+            out_channels=256,
+            kernel_size=(3, 3),
+            padding=(1, 1),
+        )
+        self.bn1_4 = nn.BatchNorm2d(num_features=256)
+        self.conv6 = nn.Conv2d(
+            in_channels=256,
+            out_channels=512,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+
+        self.maxpool = nn.MaxPool2d(kernel_size=(2, 2), padding=(1, 1), stride=2)
+        self.maxpool_ = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+        self.dropout = nn.Dropout()
+        self.flatten = nn.Flatten()
+
+        self.fc1 = nn.Linear(
+            in_features=2 * 2 * 512,
+            out_features=512
+        )
+        self.bn2_1 = nn.BatchNorm1d(num_features=512)
+
+        self.fc2 = nn.Linear(
+            in_features=512,
+            out_features=256
+        )
+        self.bn2_2 = nn.BatchNorm1d(num_features=256)
+
+        self.fc3 = nn.Linear(
+            in_features=256,
+            out_features=128
+        )
+        self.bn2_3 = nn.BatchNorm1d(num_features=128)
+
+        self.fc4 = nn.Linear(
+            in_features=128,
+            out_features=64
+        )
+        self.bn2_4 = nn.BatchNorm1d(num_features=64)
+
+        self.fc5 = nn.Linear(
+            in_features=64,
+            out_features=2
+        )
+
+        torch.nn.init.kaiming_normal_(self.conv1.weight)
+        torch.nn.init.kaiming_normal_(self.conv2.weight)
+        torch.nn.init.kaiming_normal_(self.conv3.weight)
+        torch.nn.init.kaiming_normal_(self.conv4.weight)
+        torch.nn.init.kaiming_normal_(self.conv5.weight)
+        torch.nn.init.kaiming_normal_(self.conv6.weight)
+        torch.nn.init.kaiming_normal_(self.fc1.weight)
+        torch.nn.init.kaiming_normal_(self.fc2.weight)
+        torch.nn.init.kaiming_normal_(self.fc3.weight)
+        torch.nn.init.kaiming_normal_(self.fc4.weight)
+        torch.nn.init.kaiming_normal_(self.fc5.weight)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.bn1_1(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv2(x)
+        x = self.bn1_2(x)
+        x = F.relu(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv3(x)
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv4(x)
+        x = self.bn1_3(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv5(x)
+        x = self.bn1_4(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv6(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+        x = self.dropout(x)
+
+        x = self.flatten(x)
+
+        x = self.fc1(x)
+        x = self.bn2_1(x)
+        x = F.hardswish(x)
+
+        x = self.fc2(x)
+        x = self.bn2_2(x)
+        x = F.hardswish(x)
+        x = self.dropout(x)
+
+        x = self.fc3(x)
+        x = self.bn2_3(x)
+        x = F.hardswish(x)
+        x = self.dropout(x)
+
+        x = self.fc4(x)
+        x = self.bn2_4(x)
+        x = F.hardswish(x)
+
+        x = self.fc5(x)
+        x = F.softmax(x, dim=1)
+
+        return x
+
+
+class NeuralNetwork200(nn.Module):
+    def __init__(self):
+        super(NeuralNetwork200, self).__init__()
+        self.conv1 = nn.Conv2d(
+            in_channels=1,
+            out_channels=64,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.bn1_1 = nn.BatchNorm2d(num_features=64)
+        self.conv2 = nn.Conv2d(
+            in_channels=64,
+            out_channels=128,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.bn1_2 = nn.BatchNorm2d(num_features=128)
+        self.conv3 = nn.Conv2d(
+            in_channels=128,
+            out_channels=128,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.conv4 = nn.Conv2d(
+            in_channels=128,
+            out_channels=256,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+        self.bn1_3 = nn.BatchNorm2d(num_features=256)
+        self.conv5 = nn.Conv2d(
+            in_channels=256,
+            out_channels=256,
+            kernel_size=(3, 3),
+            padding=(1, 1),
+        )
+        self.bn1_4 = nn.BatchNorm2d(num_features=256)
+        self.conv6 = nn.Conv2d(
+            in_channels=256,
+            out_channels=512,
+            kernel_size=(3, 3),
+            padding=(1, 1)
+        )
+
+        self.maxpool = nn.MaxPool2d(kernel_size=(2, 2), padding=(1, 1), stride=2)
+        self.maxpool_ = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+        self.dropout = nn.Dropout()
+        self.flatten = nn.Flatten()
+
+        self.fc1 = nn.Linear(
+            in_features=4 * 4 * 512,
+            out_features=512
+        )
+        self.bn2_1 = nn.BatchNorm1d(num_features=512)
+
+        self.fc2 = nn.Linear(
+            in_features=512,
+            out_features=256
+        )
+        self.bn2_2 = nn.BatchNorm1d(num_features=256)
+
+        self.fc3 = nn.Linear(
+            in_features=256,
+            out_features=128
+        )
+        self.bn2_3 = nn.BatchNorm1d(num_features=128)
+
+        self.fc4 = nn.Linear(
+            in_features=128,
+            out_features=64
+        )
+        self.bn2_4 = nn.BatchNorm1d(num_features=64)
+
+        self.fc5 = nn.Linear(
+            in_features=64,
+            out_features=2
+        )
+
+        torch.nn.init.kaiming_normal_(self.conv1.weight)
+        torch.nn.init.kaiming_normal_(self.conv2.weight)
+        torch.nn.init.kaiming_normal_(self.conv3.weight)
+        torch.nn.init.kaiming_normal_(self.conv4.weight)
+        torch.nn.init.kaiming_normal_(self.conv5.weight)
+        torch.nn.init.kaiming_normal_(self.conv6.weight)
+        torch.nn.init.kaiming_normal_(self.fc1.weight)
+        torch.nn.init.kaiming_normal_(self.fc2.weight)
+        torch.nn.init.kaiming_normal_(self.fc3.weight)
+        torch.nn.init.kaiming_normal_(self.fc4.weight)
+        torch.nn.init.kaiming_normal_(self.fc5.weight)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.bn1_1(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv2(x)
+        x = self.bn1_2(x)
+        x = F.relu(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv3(x)
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv4(x)
+        x = self.bn1_3(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv5(x)
+        x = self.bn1_4(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+
+        x = self.conv6(x)
+        x = F.hardswish(x)
+        x = self.maxpool_(x) if (x.shape[-1] % 2 == 0) else self.maxpool(x)
+        x = self.dropout(x)
+
+        x = self.flatten(x)
+
+        x = self.fc1(x)
+        x = self.bn2_1(x)
+        x = F.hardswish(x)
+
+        x = self.fc2(x)
+        x = self.bn2_2(x)
+        x = F.hardswish(x)
+        x = self.dropout(x)
+
+        x = self.fc3(x)
+        x = self.bn2_3(x)
+        x = F.hardswish(x)
+        x = self.dropout(x)
+
+        x = self.fc4(x)
+        x = self.bn2_4(x)
+        x = F.hardswish(x)
+
+        x = self.fc5(x)
+        x = F.softmax(x, dim=1)
+
+        return x
+
+
+class NeuralNetwork300(nn.Module):
+    def __init__(self):
+        super(NeuralNetwork300, self).__init__()
         self.conv1 = nn.Conv2d(
             in_channels=1,
             out_channels=64,

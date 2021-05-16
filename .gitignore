@@ -4,3 +4,7 @@
 .ipynb_checkpoints/
 __pycache__/
 APP/
+/generate_to_torch/splited_Pneumonia_all_true_false_split_1_0_(100, 100).npz
+/generate_to_torch/splited_Pneumonia_all_true_false_split_1_0_(200, 200).npz
+/generate_to_torch/splited_Pneumonia_all_true_false_split_1_1_(200, 200).npz
+/generate_to_torch/splited_Pneumonia_all_true_false_split_1_1_(100, 100).npz

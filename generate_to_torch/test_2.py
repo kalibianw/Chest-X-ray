@@ -3,11 +3,11 @@ from torchsummary import summary
 import torch
 import numpy as np
 
-MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_(300, 300)_swish.pt"
+MODEL_PATH = "splited_Pneumonia_all_true_false_split_1_1_(300, 300)_swish.pt"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 dm = DataModule(32, shuffle=True)
-npz_path = "splited_Pneumonia_all_true_false_split_1_(300, 300).npz"
+npz_path = "splited_Pneumonia_all_true_false_split_1_1_(300, 300).npz"
 nploader = np.load(npz_path)
 for key in nploader:
     print(key)

@@ -9,19 +9,19 @@ dm = DataModule("None")
 # ARC or ASA file name(s)
 FILE_NAMES = ["splited_Pneumonia_all"]
 ARC_ASA = "ASA"
-TARGET_WIDTH = 300
-TARGET_HEIGHT = 300
+TARGET_WIDTH = 200
+TARGET_HEIGHT = 200
 # 0: train_test_unsplit, 1: train_test_split, 2: true_false_split
 ORIGINAL_FILE_STATUS = 2
 AUGMENTED = True
-ZERO_PADDING = False
+ZERO_PADDING = True
 
 for file_name_count, file_name in enumerate(FILE_NAMES):
     os.system("cls")
 
     if ORIGINAL_FILE_STATUS == 0:
         nploader = np.load(f"{ARC_ASA}/{file_name}.npz")
-        dataset_dir_path = "C:/Users/admin/Documents/AI/data/Coronahack-Chest-XRay-Dataset/Coronahack-Chest-XRay-Dataset/"
+        dataset_dir_path = "D:/AI/data/Coronahack-Chest-XRay-Dataset/Coronahack-Chest-XRay-Dataset/"
 
         img_paths, label = nploader["img_path"], nploader["label"]
 
@@ -54,7 +54,7 @@ for file_name_count, file_name in enumerate(FILE_NAMES):
     elif ORIGINAL_FILE_STATUS == 1:
         nploader = np.load(f"{ARC_ASA}/{file_name[file_name_count]}.npz")
 
-        dataset_dir_path = "C:/Users/admin/Documents/AI/data/Coronahack-Chest-XRay-Dataset/Coronahack-Chest-XRay-Dataset/"
+        dataset_dir_path = "D:/AI/data/Coronahack-Chest-XRay-Dataset/Coronahack-Chest-XRay-Dataset/"
 
         train_img_path, train_label = nploader["train_img_path"], nploader["train_label"]
         test_img_path, test_label = nploader["test_img_path"], nploader["test_label"]
@@ -107,7 +107,7 @@ for file_name_count, file_name in enumerate(FILE_NAMES):
 
     elif ORIGINAL_FILE_STATUS == 2:
         nploader = np.load(f"{ARC_ASA}/{file_name}.npz")
-        dataset_dir_path = "C:/Users/admin/Documents/AI/data/Coronahack-Chest-XRay-Dataset/Coronahack-Chest-XRay-Dataset/"
+        dataset_dir_path = "D:/AI/data/Coronahack-Chest-XRay-Dataset/Coronahack-Chest-XRay-Dataset/"
 
         train_img_paths, train_labels = nploader["train_img_paths"], nploader["train_labels"]
         valid_img_paths, valid_labels = nploader["valid_img_paths"], nploader["valid_labels"]

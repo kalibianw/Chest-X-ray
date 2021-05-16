@@ -3,7 +3,7 @@ import numpy as np
 
 from utils import TrainModule
 
-nploader = np.load("../generate_to_torch/splited_Pneumonia_all_true_false_split_1_(300, 300).npz")
+nploader = np.load("../generate_to_torch/splited_Pneumonia_all_true_false_split_1_1_(300, 300).npz")
 
 train_x_data, valid_x_data, test_x_data, train_y_data, valid_y_data, test_y_data = np.expand_dims(nploader["train_x_data"], axis=-1), \
                                                                                    np.expand_dims(nploader["valid_x_data"], axis=-1), \
