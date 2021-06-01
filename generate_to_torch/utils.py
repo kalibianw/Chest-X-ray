@@ -567,10 +567,19 @@ class TestModule:
         return true_positive, true_negative, false_positive, false_negative
 
     def evaluation(self, TP, TN, FP, FN):
-        recall = TP / (TP + FN)
-        precision = TP / (TP + FP)
+        try:
+            recall = TP / (TP + FN)
+        except ZeroDivisionError:
+            recall = TP / (TP + FN + 1e-5)
+        try:
+            precision = TP / (TP + FP)
+        except ZeroDivisionError:
+            precision = TP / (TP + FP + 1e-5)
+        try:
+            specificity = TN / (TN + FP)
+        except ZeroDivisionError:
+            specificity = TN / (TN + FP + 1e-5)
         f1_score = 2 * ((precision * recall) / (precision + recall))
-        specificity = TN / (TN + FP)
 
         print(f"Recall: {recall}\nPrecision: {precision}\nF1 Score: {f1_score}\nSpecificity: {specificity}")
 
